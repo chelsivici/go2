@@ -1,1 +1,9 @@
-# go2
+# Unitree Go2 RL Controller with Isaac Sim + Isaac Lab
+
+This repository contains everything needed to train and deploy a reinforcement learning-based locomotion controller for the Unitree Go2 robot using Isaac Sim 4.5 and Isaac Lab. To train the controller, run the following command: `./isaaclab.sh -p scripts/reinforcement_learning/rsl_rl/train.py --task=Isaac-Velocity-Flat-Unitree-Go2-v0 --headless --max_iterations=10000`. This will generate a trained policy inside the `logs/runs/<timestamp>/` folder. To run a trained policy and visualize it, use: `./isaaclab.sh -p scripts/reinforcement_learning/rsl_rl/play.py --task=Isaac-Velocity-Flat-Unitree-Go2-v0 --num_env=3`.
+
+Controllers are located in `/home/humanoid/Downloads/isaac-sim-4.5/exts/isaacsim.robot.policy.examples/isaacsim/robot/policy/examples/robots`, and you must edit the corresponding controller script to use the right USD and policy file. You can change the robot USD used during training in `/home/humanoid/IsaacLab/source/isaaclab_assets/isaaclab_assets/robots/unitree.py` by modifying the `usd_path` in the `UNITREE_GO2_CFG`.
+
+The policy is always exported into the most recent `logs/runs/` folder. To use it in your controller, update the `.load_policy()` call with the full path to the `.pt` file and ensure the controller uses the correct USD. If the robot is moving too quickly or erratically, reduce the action scale in the controller (e.g., `self._action_scale = 0.2`) or lower `self.actions.joint_pos.scale` in the environment configuration. This setup assumes Isaac Sim 4.5 and Isaac Lab are properly installed and working with GPU acceleration and all dependencies.
+
+Make sure to match the joint names in your USD to what's expected, especially for sensor and reward configurations. For custom debugging or printouts during runtime, insert logging inside the controller’s `forward()` or `_compute_observation()` methods.
